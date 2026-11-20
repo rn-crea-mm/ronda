@@ -318,7 +318,7 @@ ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
     } else sel();
   });
 
-  var ENVIO = "https://formsubmit.co/ajax/juandiegoosuna@gmail.com";
+  var ENVIO = "https://api.web3forms.com/submit";
   $("enviar").addEventListener("click", function () {
     var txt = $("codigo").value, b = $("enviar"), m = $("enviado");
     if (!txt) { m.textContent = "Primero tocá Armar mi respuesta."; return; }
@@ -327,10 +327,10 @@ ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
     fetch(ENVIO, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify({ _subject: "RONDA CREA " + per + " - " + EMPRESA.nombre, _captcha: "false", _template: "box", empresa: EMPRESA.nombre, periodo: per, respuesta: txt })
+      body: JSON.stringify({ access_key: "21781e0c-c466-4ee7-bf3f-105c7b784e66", subject: "RONDA CREA " + per + " - " + EMPRESA.nombre, from_name: EMPRESA.nombre, empresa: EMPRESA.nombre, periodo: per, respuesta: txt })
     }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) {
-        if (x.ok && String(x.j.success) !== "false") { m.textContent = "Listo, la respuesta fue enviada a CREA. Gracias."; m.style.color = "var(--ok, #1a7f37)"; }
+        if (x.ok && x.j.success === true) { m.textContent = "Listo, la respuesta fue enviada a CREA. Gracias."; m.style.color = "var(--ok, #1a7f37)"; }
         else { b.disabled = false; m.textContent = "No se pudo enviar. Abrí la opción de abajo y mandalo por WhatsApp."; document.querySelector("details.alt").open = true; }
       })
       .catch(function () { b.disabled = false; m.textContent = "No se pudo enviar. Abrí la opción de abajo y mandalo por WhatsApp."; document.querySelector("details.alt").open = true; });
