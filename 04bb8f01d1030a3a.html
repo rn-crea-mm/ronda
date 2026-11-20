@@ -101,14 +101,17 @@ ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
     <div class="msgs" id="salida-msgs"></div>
     <div class="resumen"><table id="tabla"><thead><tr><th>Dato</th><th class="v">Mes anterior</th><th class="v">Ahora</th></tr></thead><tbody></tbody></table></div>
     <p class="sub">Los valores con decimales se redondean al entero más cercano.</p>
-    <ol>
-      <li>Tocá <b>Copiar texto</b>.</li>
-      <li>Pegalo en el chat de WhatsApp con quien te envió la ronda y enviá el mensaje.</li>
-    </ol>
-    <label class="top" for="codigo">Texto a enviar</label>
-    <textarea id="codigo" class="codigo" readonly></textarea>
-    <div class="actions"><button id="copiar" type="button">Copiar texto</button></div>
-    <p class="sub" id="copiado" role="status"></p>
+    <p>Revisá que los datos estén bien y tocá <b>Enviar a CREA</b>.</p>
+    <div class="actions"><button id="enviar" type="button">Enviar a CREA</button></div>
+    <p class="sub" id="enviado" role="status"></p>
+    <details class="alt">
+      <summary>¿No se envió? Mandalo por WhatsApp</summary>
+      <p class="sub">Tocá <b>Copiar texto</b> y pegalo en el chat de WhatsApp con quien te envió la ronda.</p>
+      <label class="top" for="codigo">Texto a enviar</label>
+      <textarea id="codigo" class="codigo" readonly></textarea>
+      <div class="actions"><button id="copiar" type="button" class="sec">Copiar texto</button></div>
+      <p class="sub" id="copiado" role="status"></p>
+    </details>
   </section>
 </main>
 
@@ -301,8 +304,8 @@ ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
     var vacios = Object.keys(ant).map(Number).filter(function (k) { return [4,5,8,9,12,13,16,17,18,19,23,24,25,26,30,31,34,35,38,39].indexOf(k) >= 0 && ant[k] > 0 && !(r.v[k] > 0); });
     if (vacios.length) aviso("warn", "Dejaste vacíos datos que tenías en " + PRIOR.mes + ": " + vacios.map(function (k) { return NOMBRE[k] + " (" + ant[k] + ")"; }).join("; ") + ". Si ya no corresponden, está bien.");
     if (av.length) aviso("warn", "Hay " + av.length + " aviso(s) arriba. Podés enviar igual, o corregirlos primero.");
-    else aviso("ok", "Todo en orden. Copiá el texto y envialo por WhatsApp.");
-    $("copiado").textContent = "";
+    else aviso("ok", "Todo en orden. Tocá Enviar a CREA.");
+    $("copiado").textContent = ""; $("enviado").textContent = ""; $("enviar").disabled = false;
     $("salida").hidden = false;
     $("salida").scrollIntoView({ behavior: "smooth", block: "start" });
   });
@@ -313,6 +316,24 @@ ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(txt).then(function () { $("copiado").textContent = "Texto copiado. Pegalo en WhatsApp."; }, sel);
     } else sel();
+  });
+
+  var ENVIO = "https://formsubmit.co/ajax/juandiegoosuna@gmail.com";
+  $("enviar").addEventListener("click", function () {
+    var txt = $("codigo").value, b = $("enviar"), m = $("enviado");
+    if (!txt) { m.textContent = "Primero tocá Armar mi respuesta."; return; }
+    b.disabled = true; m.textContent = "Enviando...";
+    var per = PERIODO.anio + "-" + (PERIODO.mes < 10 ? "0" : "") + PERIODO.mes;
+    fetch(ENVIO, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({ _subject: "RONDA CREA " + per + " - " + EMPRESA.nombre, _captcha: "false", _template: "box", empresa: EMPRESA.nombre, periodo: per, respuesta: txt })
+    }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (x) {
+        if (x.ok && String(x.j.success) !== "false") { m.textContent = "Listo, la respuesta fue enviada a CREA. Gracias."; m.style.color = "var(--ok, #1a7f37)"; }
+        else { b.disabled = false; m.textContent = "No se pudo enviar. Abrí la opción de abajo y mandalo por WhatsApp."; document.querySelector("details.alt").open = true; }
+      })
+      .catch(function () { b.disabled = false; m.textContent = "No se pudo enviar. Abrí la opción de abajo y mandalo por WhatsApp."; document.querySelector("details.alt").open = true; });
   });
 
   $("limpiar").addEventListener("click", function () {
