@@ -47,7 +47,7 @@ p { margin: 0; }
 .field span.ant { font-size: .75rem; color: var(--accent); font-variant-numeric: tabular-nums; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 12px; }
 label.top { font-weight: 600; font-size: .85rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
-select, input[type="text"], textarea { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 9px 10px; width: 100%; min-width: 0; }
+select, input[type="text"], textarea { box-sizing: border-box; font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 7px; padding: 9px 10px; width: 100%; min-width: 0; }
 select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px 12px; }
 .field { display: grid; gap: 4px; min-width: 0; }
@@ -81,7 +81,7 @@ ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
   <header style="display:grid;gap:6px">
     <p class="sub" id="periodo-txt"></p>
     <h1>Ronda de Novedades CREA</h1>
-    <p class="sub">Cargá la situación actual de tus cultivos. Los campos que no corresponden se dejan vacíos. Al terminar, el formulario arma un texto para que lo envíes por WhatsApp.</p>
+    <p class="sub">Cargá la situación actual de tus cultivos. Los campos que no corresponden se dejan vacíos. Al terminar, tocá “Armar mi respuesta” y después “Enviar a CREA”.</p>
   </header>
 
   <section class="card">
